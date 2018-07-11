@@ -236,7 +236,7 @@ public abstract class AbstractGenericRowFakerBase extends GenericUDTF {
       s += splits[i];
       if (s > toss) return choices[i];
     }
-    return null;
+    return choices[choices.length-1];
   }
   
   public Random getRandom() {

@@ -557,8 +557,9 @@ public class GenerateSeries_ZEC1_ZPRC_ITEMS_TEST extends
     final Object DRAFT_DIST_CHNL = gen_VARCHAR(20);
     final Object DRAFT_DIST_CHNL_TEXT = gen_VARCHAR(200);
     final Object DRAFT_ORDER = gen_VARCHAR(10);
+    final Object RH_ACTIVATION_DATE = gen_DATE(java.sql.Date.valueOf((ACTIVATION_DATE.toString())), getLast());
     // EKYC is only failed for a small number of recent users
-    final Object EKYC_FLAG = gen_VARCHAR(15, ("2018-06-06".compareTo(ACTIVATION_DATE.toString()) > 0) ? gen_CHOICE("eKYC", "non-eKYC", 95) : "eKYC");
+    final Object EKYC_FLAG = gen_VARCHAR(15, ("2018-12-01".compareTo(RH_ACTIVATION_DATE.toString()) < 0) ? gen_CHOICE("eKYC", "NON-eKYC", 80) : "eKYC");
     final Object ENT_TYPE = gen_VARCHAR(90);
     final Object FIRST_NAME = gen_VARCHAR(50);
     final Object FTTX_CITY_CODE = gen_VARCHAR(20);
@@ -632,7 +633,6 @@ public class GenerateSeries_ZEC1_ZPRC_ITEMS_TEST extends
     final Object PROV_TAT = gen_BIGINT();
     final Object PROV_TAT_SEC = gen_BIGINT();
     final Object PROV_TIME = gen_TIMESTAMP();
-    final Object RH_ACTIVATION_DATE = gen_DATE();
     final Object RH_ACTIVATION_DATETIME = gen_TIMESTAMP();
     final Object RH_ACTIVATION_MONTH = gen_VARCHAR(6);
     final Object RH_ACTIVATION_TIME = gen_TIMESTAMP();

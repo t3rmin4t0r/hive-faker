@@ -17,7 +17,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.primitive.LongObjectInspect
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
 import org.apache.hadoop.io.LongWritable;
 
-@Description(name = "generate_series", value = "_FUNC_(start, stop, [step]) "
+@Description(name = "generate_series", value = "_FUNC_([start,] stop [,step]) "
     + "- generate an integer series")
 public class GenerateSeriesUDTF extends GenericUDTF {
 
@@ -48,8 +48,8 @@ public class GenerateSeriesUDTF extends GenericUDTF {
   public StructObjectInspector initialize(ObjectInspector[] ois)
       throws UDFArgumentException {
     switch (ois.length) {
+    case 1:
     case 3:
-      // fall through
     case 2:
       for (int i = 0; i < ois.length; i++) {
         if (!isNumericObjectInspector(ois[i], false)) {
@@ -90,8 +90,12 @@ public class GenerateSeriesUDTF extends GenericUDTF {
         return;
       }
     }
-    long start = getArg(0, args);
-    long stop = getArg(1, args);
+    long start = 0;
+    long stop = getArg(0, args);
+    if (args.length > 1) {
+      start = stop;
+      stop = getArg(1, args);
+    }
     long step = (start > stop) ? -1 : 1;
     if (args.length > 2) {
       step = getArg(2, args);

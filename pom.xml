@@ -20,13 +20,13 @@
       <groupId>org.apache.hive</groupId>
       <artifactId>hive-exec</artifactId>
       <version>3.0.0</version>
-      <scope>compile</scope>
+	  <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-common</artifactId>
       <version>2.6.0</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
 	<dependency>
       <groupId>com.github.javafaker</groupId>
@@ -88,6 +88,28 @@
           </archive>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>build-exec-bundle</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <minimizeJar>true</minimizeJar>
+              <artifactSet>
+                <includes>
+				  <include>org.notmysock.hive:hive-faker</include>
+				  <include>com.github.javafaker:javafaker</include>
+				</includes>
+              </artifactSet>
+            </configuration>
+          </execution>
+		</executions>
+	  </plugin>
 	  <plugin>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-dependency-plugin</artifactId>

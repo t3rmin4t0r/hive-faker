@@ -2,9 +2,11 @@ package org.notmysock.hive.udf.faker;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
+import java.util.UUID;
 
 import org.apache.hadoop.hive.common.type.HiveVarchar;
 import org.apache.hadoop.hive.ql.exec.UDFArgumentException;
@@ -135,39 +137,109 @@ public abstract class AbstractGenericRowFakerBase extends GenericUDTF {
         .getPrimitiveJavaObjectInspector(TypeInfoFactory.getVarcharTypeInfo(k));
   }
 
+  public Date getFirst() {
+    return FIRST;
+  }
+
+  public Date getLast() {
+    return LAST;
+  }
+  
+  public Timestamp getFirstTime() {
+    return FIRST_TIME;
+  }
+  
+  public Timestamp getLastTime() {
+    return LAST_TIME;
+  }
+
+  private static final Date FIRST = Date.valueOf("2016-01-01");
+  private static final Date LAST = Date.valueOf("2018-12-31");
+  
+  private static final Timestamp FIRST_TIME = new Timestamp(FIRST.getTime());
+  private static final Timestamp LAST_TIME = new Timestamp(LAST.getTime());
+  
+
   public Date gen_DATE() {
-    return null;
+    return gen_DATE(getFirst(), getLast());
   }
 
   public Date gen_DATE(Date earliest, Date latest) {
-    return null;
+    return new java.sql.Date(faker.date().between(earliest, latest).toInstant()
+        .toEpochMilli());
   }
-  
+
   public Timestamp gen_TIMESTAMP() {
-    return null;
+    return gen_TIMESTAMP(getFirstTime(), getLastTime());
   }
   
   public Timestamp gen_TIMESTAMP(Timestamp earliest, Timestamp latest) {
-    return null;
+    java.util.Date ts = faker.date().between(new java.sql.Date(earliest.getTime()), new java.sql.Date(latest.getTime()));
+    return new java.sql.Timestamp(ts.getTime());
   }
 
   public Long gen_BIGINT() {
-    return null;
+    return random.nextLong();
   }
   
   public Long gen_BIGINT(long min, long max) {
-    return null;
+    return (long) Math.floor((max-min)*random.nextDouble());
   }
 
   public HiveVarchar gen_VARCHAR(int k) {
-    return null;
+    return new HiveVarchar(gen_STRING(random.nextInt(k)), k);
+  }
+  
+  public HiveVarchar gen_VARCHAR(int k, String value) {
+    return new HiveVarchar(value, k);
   }
 
   public String gen_STRING() {
-    return null;
+    return gen_STRING(random.nextInt(13));
   }
 
   public String gen_STRING(int k) {
+    StringBuilder sb = new StringBuilder(k);
+    for (int i = 0; i < k; i++) {
+      int rnd = (int) (random.nextInt(62));
+      char c =' ';
+      if (rnd < 10) {
+        c = (char)('0'+rnd);
+      } else if (rnd < 36) {
+        c = (char)('a'+(rnd-10));
+      } else {
+        c = (char)('A' + (rnd-36));
+      }
+      sb.append(c);
+    }
+    return sb.toString();
+  }
+  
+  public String gen_UUID() {
+    return UUID.randomUUID().toString();
+  }
+
+  // split out of 100
+  public String gen_CHOICE(String option1, String option2, int split) {
+    if (split <= random.nextInt(100)) {
+      return option1;
+    } else {
+      return option2;
+    }
+  }
+
+  // split out of 100
+  public String gen_CHOICE(String[] choices, int[] splits) {
+    int toss = random.nextInt(100);
+    int s = 0;
+    for (int i = 0; i < splits.length; i++) {
+      s += splits[i];
+      if (s > toss) return choices[i];
+    }
     return null;
+  }
+  
+  public Random getRandom() {
+    return this.random;
   }
 }

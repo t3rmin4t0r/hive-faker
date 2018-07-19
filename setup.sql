@@ -1,7 +1,7 @@
 use testing;
 
 
-add jar /tmp/hive-faker-1.0-SNAPSHOT.jar ;
+add jar hdfs:///tmp/hive-faker-1.0-SNAPSHOT.jar ;
 set hive.llap.execution.mode=none;
 
 set mapred.reduce.tasks=1024;
@@ -13,7 +13,7 @@ cc as (select seq_0 as i from c cluster by i)
 select generate_TABLE(i, 1000) from cc
 ;
 
-
+set hive.optimize.sort.dynamic.partition=true;
 
 CREATE TABLE if not exists ZEC1_ZPRC_ITEMS_TEST  (
   ACCOUNT_ID VARCHAR(20),
@@ -227,6 +227,7 @@ CREATE TABLE if not exists ZEC1_ZPRC_ITEMS_TEST  (
   RH_LOAD_TIME TIMESTAMP
 ) 
 partitioned by (R4G_STATE VARCHAR(2))
+CLUSTERED BY (ACCOUNT_ID) INTO 41 BUCKETS
 STORED AS ORC;
 
 insert into ZEC1_ZPRC_ITEMS_TEST 
